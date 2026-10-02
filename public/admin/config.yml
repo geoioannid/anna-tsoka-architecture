@@ -7,6 +7,9 @@ backend:
   name: github
   repo: geoioannid/anna-tsoka-architecture
   branch: main
+  # Token-only login: OAuth without a helper app would fall back to Netlify's
+  # dead endpoint. See SETUP.md step 5.
+  auth_methods: [token]
 
 site_url: https://annatsoka.com
 
