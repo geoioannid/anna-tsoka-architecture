@@ -5,8 +5,7 @@
 
 backend:
   name: github
-  # NOTE: replace YOUR-USERNAME after creating the repository (SETUP.md, step 1).
-  repo: YOUR-USERNAME/anna-tsoka-architecture
+  repo: geoioannid/anna-tsoka-architecture
   branch: main
 
 site_url: https://annatsoka.com
