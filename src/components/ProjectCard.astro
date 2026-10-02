@@ -1,0 +1,47 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import FadeIn from './FadeIn.astro';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  index: number;
+}
+
+const { project, index } = Astro.props;
+const p = project.data;
+
+/**
+ * Automatic editorial placement: a repeating cycle of column positions in the
+ * 12-column grid, in the spirit of thrshld.xyz — no per-project layout knobs.
+ * Only applies from md up; below that the grid is 2-col (sm) / 1-col (base).
+ */
+const patterns = [
+  { col: 'md:col-start-2 md:col-span-6', offsetY: '' },
+  { col: 'md:col-start-8 md:col-span-4', offsetY: 'md:mt-64' },
+  { col: 'md:col-start-1 md:col-span-5', offsetY: 'md:mt-32' },
+  { col: 'md:col-start-7 md:col-span-5', offsetY: 'md:mt-40' },
+  { col: 'md:col-start-3 md:col-span-6', offsetY: 'md:mt-56' },
+  { col: 'md:col-start-2 md:col-span-4', offsetY: 'md:mt-24' },
+] as const;
+
+const pattern = patterns[index % patterns.length];
+---
+
+<FadeIn delay={(index % 3) * 120} class={`mb-24 md:mb-32 ${pattern.col} ${pattern.offsetY}`}>
+  <a href={`/projects/${project.id}/`} class="group block">
+    <div class="relative overflow-hidden bg-muted">
+      <img
+        src={p.cover}
+        alt={p.title}
+        loading={index < 3 ? 'eager' : 'lazy'}
+        class="block h-auto w-full transition-all duration-[1200ms] ease-out group-hover:scale-[1.02] group-hover:opacity-90"
+      />
+    </div>
+    <div
+      class="mt-4 flex items-baseline justify-between opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+    >
+      <p class="text-[13px] font-normal tracking-tight">{p.title}</p>
+      <p class="text-[11px] tracking-widest uppercase text-muted-foreground">{p.year}</p>
+    </div>
+  </a>
+</FadeIn>

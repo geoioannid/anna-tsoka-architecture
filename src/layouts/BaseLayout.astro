@@ -1,0 +1,86 @@
+---
+import '@fontsource-variable/inter';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description = 'Anna Tsoka Architecture — a small practice for residential interiors, restorations and quiet public spaces.',
+  image,
+  noindex = false,
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://annatsoka.com');
+const canonical = new URL(Astro.url.pathname, site);
+const ogImage = image ? new URL(image, site) : undefined;
+const beacon = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Anna Tsoka Architecture" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+  </head>
+  <body>
+    <slot />
+
+    <noscript>
+      <style>
+        [data-fade] {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      </style>
+    </noscript>
+    <script>
+      const els = document.querySelectorAll<HTMLElement>('[data-fade]');
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('fade-in-up-visible');
+              io.unobserve(e.target);
+            }
+          }
+        },
+        { rootMargin: '0px 0px -10% 0px' },
+      );
+      els.forEach((el) => {
+        const delay = Number(el.dataset.fadeDelay ?? 0);
+        if (delay) el.style.transitionDelay = `${delay}ms`;
+        io.observe(el);
+      });
+    </script>
+
+    {
+      beacon && (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={JSON.stringify({ token: beacon })}
+        />
+      )
+    }
+  </body>
+</html>

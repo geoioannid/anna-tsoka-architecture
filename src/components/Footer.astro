@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+
+const settings = (await getCollection('settings'))[0]?.data;
+const email = settings?.email ?? '';
+const instagram = settings?.instagram ?? '';
+const city = settings?.city ?? '';
+---
+
+<footer class="border-t border-border">
+  <div
+    class="mx-auto flex max-w-[1600px] flex-col justify-between gap-8 px-6 py-16 text-xs tracking-widest uppercase text-muted-foreground md:flex-row md:px-12"
+  >
+    <p>© {new Date().getFullYear()} Anna Tsoka Architecture{city && ` — ${city}`}</p>
+    <div class="flex gap-8">
+      {email && <a href={`mailto:${email}`} class="hover:text-foreground">{email}</a>}
+      {
+        instagram && (
+          <a href={instagram} target="_blank" rel="noreferrer" class="hover:text-foreground">
+            Instagram
+          </a>
+        )
+      }
+    </div>
+  </div>
+</footer>

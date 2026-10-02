@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Slideshow from '../components/Slideshow.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import FadeIn from '../components/FadeIn.astro';
+import Footer from '../components/Footer.astro';
+
+const home = (await getCollection('home'))[0]?.data;
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<BaseLayout
+  title="Anna Tsoka Architecture"
+  description="Anna Tsoka Architecture — a small practice for residential interiors, restorations and quiet public spaces."
+>
+  <Nav overHero />
+  <main>
+    {home && home.carousel.length > 0 && <Slideshow slides={home.carousel} />}
+
+    <section class="mx-auto max-w-[1600px] px-6 py-32 md:px-12 md:py-48">
+      <FadeIn class="mb-24 md:mb-40 md:grid md:grid-cols-12">
+        <div class="md:col-span-6 md:col-start-2">
+          <p class="text-xs tracking-widest uppercase text-muted-foreground">Selected Works</p>
+          {home?.intro && (
+            <h2 class="mt-6 text-2xl leading-[1.35] font-normal tracking-tight md:text-3xl">
+              {home.intro}
+            </h2>
+          )}
+        </div>
+      </FadeIn>
+
+      <div class="grid grid-cols-1 gap-x-6 sm:grid-cols-2 md:grid-cols-12">
+        {projects.map((project, i) => <ProjectCard project={project} index={i} />)}
+      </div>
+    </section>
+
+    <Footer />
+  </main>
+</BaseLayout>

@@ -1,0 +1,12 @@
+---
+interface Props {
+  delay?: number;
+  class?: string;
+}
+
+const { delay = 0, class: className = '' } = Astro.props;
+---
+
+<div data-fade data-fade-delay={delay || undefined} class={`fade-in-up ${className}`}>
+  <slot />
+</div>

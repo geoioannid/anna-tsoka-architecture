@@ -1,0 +1,131 @@
+# Sveltia CMS configuration (Decap-compatible).
+# Login: open /admin and use "Sign In with Token" with a GitHub personal
+# access token that has Contents read/write on this repository.
+# See SETUP.md steps 4–5 for the one-time setup.
+
+backend:
+  name: github
+  # NOTE: replace YOUR-USERNAME after creating the repository (SETUP.md, step 1).
+  repo: YOUR-USERNAME/anna-tsoka-architecture
+  branch: main
+
+site_url: https://annatsoka.com
+
+media_folder: public/uploads
+public_folder: /uploads
+
+# Every uploaded photo is compressed in the browser before it is committed:
+# converted to WebP at quality 85, longest side capped at 2560px, EXIF stripped.
+# Originals never enter the repository.
+media_libraries:
+  all:
+    transformations:
+      raster_image:
+        format: webp
+        quality: 85
+        width: 2560
+        height: 2560
+
+collections:
+  - name: projects
+    label: Projects
+    label_singular: Project
+    folder: src/content/projects
+    create: true
+    slug: '{{slug}}'
+    sortable_fields: [order, title, year, phase]
+    summary: '{{title}} — {{year}} (order {{order}})'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Location, name: location, widget: string, required: false }
+      - { label: Year, name: year, widget: string, required: false }
+      - label: Phase of development
+        name: phase
+        widget: select
+        options: [Built, Under construction, Competition, Study, Installation, Furniture]
+        default: Built
+      - label: Custom phase
+        name: phaseCustom
+        widget: string
+        required: false
+        hint: Only if none of the list above fits — this replaces the selected phase on the page.
+      - label: Order
+        name: order
+        widget: number
+        default: 100
+        hint: Position on the home page grid — lower numbers come first (10, 20, 30…).
+      - { label: Main image, name: cover, widget: image, hint: Any aspect ratio; shown large at the top of the project page. }
+      - label: Description
+        name: description
+        widget: text
+        required: false
+        hint: Shown next to the main image, under the project facts.
+      - label: Page content
+        name: blocks
+        widget: list
+        hint: Build the page top-to-bottom — alternate text sections and image sets freely.
+        types:
+          - name: text
+            label: Text section
+            widget: object
+            summary: 'Text: {{title}}'
+            fields:
+              - { label: Title, name: title, widget: string, required: false }
+              - { label: Subtitle, name: subtitle, widget: string, required: false }
+              - label: Text
+                name: text
+                widget: text
+                hint: Leave a blank line between paragraphs.
+          - name: images
+            label: Image set
+            widget: object
+            summary: Image set
+            fields:
+              - label: Images
+                name: images
+                widget: list
+                hint: Images are placed two side-by-side when at least one of a pair is portrait, otherwise full width.
+                fields:
+                  - { label: Image, name: image, widget: image }
+                  - { label: Caption, name: caption, widget: string, required: false, hint: Shown under the image; also used as its alt text. }
+
+  - name: site
+    label: Home, About & Footer
+    files:
+      - name: home
+        label: Home page & carousel
+        file: src/content/home.yml
+        fields:
+          - label: Intro heading
+            name: intro
+            widget: text
+            required: false
+            hint: The short paragraph under “Selected Works” on the home page.
+          - label: Carousel images
+            name: carousel
+            widget: list
+            hint: Full-width slides, cropped to 16:9 — order = display order.
+            fields:
+              - { label: Image, name: image, widget: image }
+              - { label: Caption, name: caption, widget: string, required: false, hint: Optional small overlay; also used as alt text. }
+      - name: about
+        label: About page
+        file: src/content/about.yml
+        fields:
+          - { label: Portrait, name: portrait, widget: image }
+          - { label: Intro heading, name: heading, widget: string, required: false }
+          - label: Bio
+            name: bio
+            widget: text
+            hint: Leave a blank line between paragraphs.
+          - label: Services
+            name: services
+            widget: list
+            field: { label: Service, name: service, widget: string }
+      - name: settings
+        label: Footer & contact
+        file: src/content/settings.yml
+        fields:
+          - { label: Email, name: email, widget: string }
+          - { label: Instagram URL, name: instagram, widget: string, required: false }
+          - { label: City, name: city, widget: string, required: false }

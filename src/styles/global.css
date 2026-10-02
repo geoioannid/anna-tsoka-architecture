@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --font-sans: "Inter Variable", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #111111;
+  --muted: #f5f5f5;
+  --muted-foreground: #6b6b6b;
+  --border: #ececec;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    letter-spacing: -0.005em;
+  }
+  ::selection {
+    background: #111;
+    color: #fff;
+  }
+}
+
+@utility fade-in-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@utility fade-in-up-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Nav: transparent/white over the hero, solid once scrolled (toggled by Nav.astro) */
+#site-nav {
+  color: #fff;
+}
+#site-nav.nav-solid {
+  color: var(--foreground);
+  background-color: var(--background);
+}

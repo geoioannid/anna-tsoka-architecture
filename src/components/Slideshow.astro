@@ -1,0 +1,116 @@
+---
+interface Slide {
+  image: string;
+  caption?: string;
+}
+
+interface Props {
+  slides: Slide[];
+}
+
+const { slides } = Astro.props;
+const captions = JSON.stringify(slides.map((s) => s.caption ?? ''));
+---
+
+<section
+  class="relative w-full aspect-video max-h-[88vh] overflow-hidden bg-[#111]"
+  data-slideshow
+  data-captions={captions}
+  aria-label="Featured work"
+  aria-roledescription="carousel"
+>
+  {
+    slides.map((s, i) => (
+      <img
+        src={s.image}
+        alt={s.caption ?? ''}
+        fetchpriority={i === 0 ? 'high' : 'low'}
+        loading={i === 0 ? 'eager' : 'lazy'}
+        decoding={i === 0 ? 'sync' : 'async'}
+        class={`slideshow-img absolute inset-0 h-full w-full object-cover transition-opacity duration-[2000ms] ease-in-out ${
+          i === 0 ? 'opacity-100' : 'opacity-0'
+        }`}
+      />
+    ))
+  }
+
+  <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/25"></div>
+
+  <p
+    class="slideshow-caption pointer-events-none absolute bottom-6 left-6 max-w-[80%] text-[13px] tracking-wide text-white/90 md:bottom-8 md:left-10"
+  >
+    {slides[0]?.caption ?? ''}
+  </p>
+
+  <div class="absolute bottom-6 right-6 flex items-center gap-3 md:bottom-8 md:right-10">
+    {
+      slides.map((_, i) => (
+        <button
+          type="button"
+          class="slideshow-dot h-1.5 w-1.5 rounded-full bg-white/40 transition-colors duration-500"
+          aria-label={`Go to slide ${i + 1}`}
+          data-goto={i}
+        />
+      ))
+    }
+  </div>
+
+  <button
+    type="button"
+    class="slideshow-prev absolute top-1/2 left-4 -translate-y-1/2 px-2 py-4 text-2xl font-light text-white/60 transition-opacity duration-300 hover:text-white md:left-8"
+    aria-label="Previous slide"
+  >‹</button>
+  <button
+    type="button"
+    class="slideshow-next absolute top-1/2 right-4 -translate-y-1/2 px-2 py-4 text-2xl font-light text-white/60 transition-opacity duration-300 hover:text-white md:right-8"
+    aria-label="Next slide"
+  >›</button>
+</section>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-slideshow]')) {
+    const images = [...root.querySelectorAll<HTMLImageElement>('.slideshow-img')];
+    const dots = [...root.querySelectorAll<HTMLElement>('.slideshow-dot')];
+    const captionEl = root.querySelector<HTMLElement>('.slideshow-caption');
+    const captions: string[] = JSON.parse(root.dataset.captions ?? '[]');
+    if (images.length === 0) continue;
+
+    let index = 0;
+    let timer: ReturnType<typeof setInterval> | undefined;
+
+    const show = (i: number) => {
+      index = (i + images.length) % images.length;
+      images.forEach((img, j) => img.classList.toggle('opacity-100', j === index));
+      dots.forEach((dot, j) => {
+        dot.classList.toggle('bg-white/40', j !== index);
+        dot.classList.toggle('bg-white', j === index);
+      });
+      if (captionEl) captionEl.textContent = captions[index] ?? '';
+    };
+
+    // Any manual interaction stops autoplay for the rest of the visit.
+    const stop = () => {
+      if (timer) clearInterval(timer);
+      timer = undefined;
+    };
+
+    if (timer === undefined && images.length > 1) {
+      timer = setInterval(() => show(index + 1), 5000);
+    }
+
+    root.querySelector('.slideshow-prev')?.addEventListener('click', () => {
+      stop();
+      show(index - 1);
+    });
+    root.querySelector('.slideshow-next')?.addEventListener('click', () => {
+      stop();
+      show(index + 1);
+    });
+    for (const dot of dots) {
+      dot.addEventListener('click', () => {
+        stop();
+        show(Number(dot.dataset.goto));
+      });
+    }
+  }
+</script>

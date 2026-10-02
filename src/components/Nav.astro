@@ -1,0 +1,33 @@
+---
+interface Props {
+  overHero?: boolean;
+}
+const { overHero = false } = Astro.props;
+---
+
+<header
+  id="site-nav"
+  class="fixed inset-x-0 top-0 z-50 transition-colors duration-700"
+  data-over-hero={overHero ? 'true' : 'false'}
+>
+  <nav class="flex items-center justify-between px-6 py-6 md:px-10 md:py-8" aria-label="Main">
+    <a href="/" class="text-[15px] font-normal tracking-[0.08em]">ANNA</a>
+    <a
+      href="/about"
+      class="text-[13px] font-normal tracking-wide lowercase transition-opacity hover:opacity-60"
+    >
+      about
+    </a>
+  </nav>
+</header>
+
+<script>
+  const nav = document.getElementById('site-nav');
+  if (nav) {
+    const overHero = nav.dataset.overHero === 'true';
+    const update = () =>
+      nav.classList.toggle('nav-solid', !overHero || window.scrollY > window.innerHeight * 0.85);
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+  }
+</script>
