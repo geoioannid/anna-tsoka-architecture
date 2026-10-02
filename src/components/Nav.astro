@@ -1,4 +1,6 @@
 ---
+import { withBase } from '../lib/url';
+
 interface Props {
   overHero?: boolean;
 }
@@ -11,9 +13,9 @@ const { overHero = false } = Astro.props;
   data-over-hero={overHero ? 'true' : 'false'}
 >
   <nav class="flex items-center justify-between px-6 py-6 md:px-10 md:py-8" aria-label="Main">
-    <a href="/" class="text-[15px] font-normal tracking-[0.08em]">ANNA</a>
+    <a href={withBase('/')} class="text-[15px] font-normal tracking-[0.08em]">ANNA</a>
     <a
-      href="/about"
+      href={withBase('/about/')}
       class="text-[13px] font-normal tracking-wide lowercase transition-opacity hover:opacity-60"
     >
       about

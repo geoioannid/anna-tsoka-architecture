@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import FadeIn from './FadeIn.astro';
+import { withBase } from '../lib/url';
 
 interface Props {
   project: CollectionEntry<'projects'>;
@@ -28,10 +29,10 @@ const pattern = patterns[index % patterns.length];
 ---
 
 <FadeIn delay={(index % 3) * 120} class={`mb-24 md:mb-32 ${pattern.col} ${pattern.offsetY}`}>
-  <a href={`/projects/${project.id}/`} class="group block">
+  <a href={withBase(`/projects/${project.id}/`)} class="group block">
     <div class="relative overflow-hidden bg-muted">
       <img
-        src={p.cover}
+        src={withBase(p.cover)}
         alt={p.title}
         loading={index < 3 ? 'eager' : 'lazy'}
         class="block h-auto w-full transition-all duration-[1200ms] ease-out group-hover:scale-[1.02] group-hover:opacity-90"

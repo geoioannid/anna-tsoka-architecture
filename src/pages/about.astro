@@ -5,6 +5,7 @@ import Nav from '../components/Nav.astro';
 import FadeIn from '../components/FadeIn.astro';
 import Footer from '../components/Footer.astro';
 import { paragraphs } from '../lib/blocks';
+import { withBase } from '../lib/url';
 
 const about = (await getCollection('about'))[0]?.data;
 const settings = (await getCollection('settings'))[0]?.data;
@@ -21,7 +22,7 @@ const settings = (await getCollection('settings'))[0]?.data;
       <div class="grid gap-16 md:grid-cols-12 md:gap-x-12">
         <FadeIn class="md:col-span-5 md:col-start-1">
           <img
-            src={about?.portrait}
+            src={withBase(about?.portrait ?? '')}
             alt="Studio portrait"
             loading="lazy"
             class="block h-auto w-full bg-muted"

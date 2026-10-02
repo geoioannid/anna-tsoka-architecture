@@ -1,4 +1,6 @@
 ---
+import { withBase } from '../lib/url';
+
 interface Slide {
   image: string;
   caption?: string;
@@ -21,8 +23,8 @@ const captions = JSON.stringify(slides.map((s) => s.caption ?? ''));
 >
   {
     slides.map((s, i) => (
-      <img
-        src={s.image}
+        <img
+          src={withBase(s.image)}
         alt={s.caption ?? ''}
         fetchpriority={i === 0 ? 'high' : 'low'}
         loading={i === 0 ? 'eager' : 'lazy'}

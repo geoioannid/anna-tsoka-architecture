@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
+import { withBase } from '../lib/url';
 ---
 
 <BaseLayout title="Not found — Anna Tsoka Architecture" noindex>
@@ -8,7 +9,7 @@ import Nav from '../components/Nav.astro';
   <main class="flex min-h-screen items-center justify-center">
     <div class="text-center">
       <p class="text-xs tracking-widest uppercase text-muted-foreground">Not found</p>
-      <a href="/" class="mt-6 inline-block text-sm lowercase underline underline-offset-4">
+      <a href={withBase('/')} class="mt-6 inline-block text-sm lowercase underline underline-offset-4">
         return home
       </a>
     </div>

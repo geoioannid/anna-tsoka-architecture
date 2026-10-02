@@ -56,7 +56,10 @@ domain must use Cloudflare DNS, which is fine with GitHub Pages.
 4. Update the domain placeholder everywhere (only if you did **not** use
    `annatsoka.com`): search the repo for `annatsoka.com` — it appears in
    `astro.config.mjs` (`site`), `public/robots.txt` (Sitemap URL) and
-   `public/admin/config.yml` (`site_url`). Commit and push.
+   `public/admin/config.yml` (`site_url`). Additionally, in
+   `astro.config.mjs`, change `base` from `/anna-tsoka-architecture` to `/`
+   (the base is only needed while the site lives at the github.io project
+   path). Commit and push.
 
 ## 4. Create the editor's GitHub login (for Anna)
 
