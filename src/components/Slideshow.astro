@@ -27,7 +27,7 @@ const captions = JSON.stringify(slides.map((s) => s.caption ?? ''));
     resolved.map((s, i) => (
         <Picture
           src={s.img}
-          alt={s.caption ?? ''}
+          alt={s.caption || 'Featured work — Anna Tsoka Architecture'}
           layout="full-width"
           formats={['avif', 'webp']}
           fallbackFormat="webp"

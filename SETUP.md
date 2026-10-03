@@ -53,13 +53,18 @@ domain must use Cloudflare DNS, which is fine with GitHub Pages.
    domain (e.g. `annatsoka.com`). Wait for the DNS check to pass.
 3. Tick **Enforce HTTPS** once the certificate is provisioned (can take up
    to 24 h; usually minutes). GitHub also auto-redirects `www` ↔ apex.
-4. Update the domain placeholder everywhere (only if you did **not** use
-   `annatsoka.com`): search the repo for `annatsoka.com` — it appears in
-   `astro.config.mjs` (`site`), `public/robots.txt` (Sitemap URL) and
-   `public/admin/config.yml` (`site_url`). Additionally, in
-   `astro.config.mjs`, change `base` from `/anna-tsoka-architecture` to `/`
-   (the base is only needed while the site lives at the github.io project
-   path). Commit and push.
+4. No code changes needed. The deploy workflow asks the GitHub Pages API
+   where the site is served and configures Astro automatically: until the
+   custom domain is set it builds for the `github.io` project URL, and the
+   first run after the domain is live builds for it. Setting the domain does
+   **not** trigger a build by itself — re-run the workflow once
+   (**Actions → Deploy to GitHub Pages → Run workflow**) so the canonical
+   URLs, share previews, sitemap and robots.txt all switch to the domain.
+5. Re-scrape the social previews: platform caches keep the old image until
+   asked again — paste a page URL into the
+   [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/) and
+   Facebook's [Sharing Debugger](https://developers.facebook.com/tools/debug/)
+   (Scrape Again), and post a test link to WhatsApp/iMessage.
 
 ## 4. Create the editor's GitHub login (for Anna)
 
@@ -121,6 +126,17 @@ publishes the originals. Keep your originals on your computer.
    `PUBLIC_CF_BEACON_TOKEN`, value = the token.
 3. Re-run the deploy workflow (Actions tab). The beacon is now on every
    page. Visitor stats appear in Cloudflare within the hour.
+
+## 8. Google Search Console (recommended, free)
+
+Tells Google about the site directly and shows how pages rank.
+
+1. [search.google.com/search-console](https://search.google.com/search-console)
+   → **Add property** → **Domain** → enter `annatsoka.com`.
+2. Verify via DNS: choose **Cloudflare DNS** provider in the dialog and add
+   the single TXT record it shows (Cloudflare dashboard → DNS). Verification
+   usually completes in minutes.
+3. Left sidebar → **Sitemaps** → submit `sitemap-index.xml`.
 
 ## Troubleshooting
 

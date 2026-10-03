@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import { Picture } from 'astro:assets';
+import { Picture, getImage } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import FadeIn from '../components/FadeIn.astro';
@@ -11,12 +11,43 @@ import { paragraphs } from '../lib/blocks';
 const about = (await getCollection('about'))[0]?.data;
 const settings = (await getCollection('settings'))[0]?.data;
 const portrait = about?.portrait ? resolveUpload(about.portrait) : undefined;
+const site = Astro.site ?? new URL('https://annatsoka.com');
+
+// Same transform as the layout's og:image (sharp caches by parameters, so the
+// crop is generated once); gives the Person markup a real, absolute image URL.
+const portraitCard = portrait
+  ? await getImage({
+      src: portrait,
+      width: 1200,
+      height: 630,
+      fit: 'cover',
+      format: 'jpeg',
+      quality: 80,
+    })
+  : undefined;
+
+// Google's ProfilePage feature: the about page is the profile of the person
+// behind the studio (rich-results "profile page" structured data).
+const profile = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  mainEntity: {
+    '@type': 'Person',
+    name: 'Anna Tsoka',
+    jobTitle: 'Architect',
+    alternateName: 'Anna Tsoka Architecture',
+    worksFor: { '@type': 'Organization', name: 'Anna Tsoka Architecture', url: site.href },
+    ...(portraitCard ? { image: new URL(portraitCard.src, site).href } : {}),
+    ...(settings?.instagram ? { sameAs: [settings.instagram] } : {}),
+  },
+};
 ---
 
 <BaseLayout
   title="About — Anna Tsoka Architecture"
   description="About the studio — a practice for architecture and interiors, working across residential, restoration and small public projects."
   image={about?.portrait}
+  jsonLd={profile}
 >
   <Nav />
   <main class="pt-32 pb-32 md:pt-48 md:pb-48">
@@ -26,7 +57,7 @@ const portrait = about?.portrait ? resolveUpload(about.portrait) : undefined;
           {portrait && (
             <Picture
               src={portrait}
-              alt="Studio portrait"
+              alt="Anna Tsoka — studio portrait"
               layout="constrained"
               width={613}
               formats={['avif', 'webp']}

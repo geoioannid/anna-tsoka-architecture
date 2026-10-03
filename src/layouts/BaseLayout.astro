@@ -1,6 +1,7 @@
 ---
 import '@fontsource-variable/inter';
 import '../styles/global.css';
+import { getCollection } from 'astro:content';
 import { getImage } from 'astro:assets';
 import { resolveUpload } from '../lib/images';
 import { withBase } from '../lib/url';
@@ -10,6 +11,8 @@ interface Props {
   description?: string;
   image?: string;
   noindex?: boolean;
+  /** Page-specific JSON-LD, rendered after the site-wide Organization block. */
+  jsonLd?: object | object[];
 }
 
 const {
@@ -17,16 +20,45 @@ const {
   description = 'Anna Tsoka Architecture — a small practice for residential interiors, restorations and quiet public spaces.',
   image,
   noindex = false,
+  jsonLd,
 } = Astro.props;
 
 const site = Astro.site ?? new URL('https://annatsoka.com');
 const canonical = new URL(Astro.url.pathname, site);
-// Social scrapers don't reliably fetch WebP, so the share image is a dedicated
-// JPEG variant. getImage()'s URL already includes the base path.
+// Social scrapers don't reliably fetch WebP/AVIF — no major platform documents
+// either as og:image — so the share image is a dedicated JPEG card, center-
+// cropped to 1200×630: Meta and LinkedIn want ~1.91:1, X's large card 2:1,
+// WhatsApp needs ≥300px wide and under 600KB. Pages without a photo share the
+// branded fallback card. getImage()'s URL already includes the base path.
 const ogVariant = image
-  ? await getImage({ src: resolveUpload(image), width: 1200, format: 'jpeg', quality: 80 })
+  ? await getImage({
+      src: resolveUpload(image),
+      width: 1200,
+      height: 630,
+      fit: 'cover',
+      format: 'jpeg',
+      quality: 80,
+    })
   : undefined;
-const ogImage = ogVariant ? new URL(ogVariant.src, site) : undefined;
+const ogImage = new URL(ogVariant?.src ?? withBase('/og-default.jpg'), site);
+const ogWidth = ogVariant?.attributes.width ?? 1200;
+const ogHeight = ogVariant?.attributes.height ?? 630;
+const ogAlt = `${title} — featured photograph`;
+
+const settings = (await getCollection('settings'))[0]?.data;
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Anna Tsoka Architecture',
+  url: site.href,
+  logo: new URL(withBase('/apple-touch-icon.png'), site).href,
+  ...(settings?.email ? { email: settings.email } : {}),
+  ...(settings?.city
+    ? { address: { '@type': 'PostalAddress', addressLocality: settings.city } }
+    : {}),
+  ...(settings?.instagram ? { sameAs: [settings.instagram] } : {}),
+};
+const extraLd = jsonLd === undefined ? [] : Array.isArray(jsonLd) ? jsonLd : [jsonLd];
 const beacon = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
 ---
 
@@ -36,6 +68,7 @@ const beacon = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#111111" />
     <title>{title}</title>
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
@@ -49,7 +82,18 @@ const beacon = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content={ogWidth} />
+    <meta property="og:image:height" content={ogHeight} />
+    <meta property="og:image:alt" content={ogAlt} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogAlt} />
+    <script type="application/ld+json" set:html={JSON.stringify(organization)} />
+    {extraLd.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
   </head>
   <body>
     <slot />
@@ -62,6 +106,7 @@ const beacon = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
         }
       </style>
     </noscript>
+
     <script>
       const els = document.querySelectorAll<HTMLElement>('[data-fade]');
       const io = new IntersectionObserver(

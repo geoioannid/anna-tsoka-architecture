@@ -1,6 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /admin/
-
-# NOTE: update this URL when the custom domain is set up (see SETUP.md, step 3).
-Sitemap: https://annatsoka.com/sitemap-index.xml
