@@ -1,6 +1,8 @@
 ---
 import '@fontsource-variable/inter';
 import '../styles/global.css';
+import { getImage } from 'astro:assets';
+import { resolveUpload } from '../lib/images';
 import { withBase } from '../lib/url';
 
 interface Props {
@@ -19,7 +21,12 @@ const {
 
 const site = Astro.site ?? new URL('https://annatsoka.com');
 const canonical = new URL(Astro.url.pathname, site);
-const ogImage = image ? new URL(image, site) : undefined;
+// Social scrapers don't reliably fetch WebP, so the share image is a dedicated
+// JPEG variant. getImage()'s URL already includes the base path.
+const ogVariant = image
+  ? await getImage({ src: resolveUpload(image), width: 1200, format: 'jpeg', quality: 80 })
+  : undefined;
+const ogImage = ogVariant ? new URL(ogVariant.src, site) : undefined;
 const beacon = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
 ---
 
@@ -34,6 +41,8 @@ const beacon = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={withBase('/favicon.ico')} sizes="any" />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
     <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Anna Tsoka Architecture" />
