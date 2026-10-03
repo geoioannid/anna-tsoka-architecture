@@ -1,6 +1,8 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { Picture } from 'astro:assets';
 import FadeIn from './FadeIn.astro';
+import { resolveUpload } from '../lib/images';
 import { withBase } from '../lib/url';
 
 interface Props {
@@ -15,26 +17,32 @@ const p = project.data;
  * Automatic editorial placement: a repeating cycle of column positions in the
  * 12-column grid, in the spirit of thrshld.xyz — no per-project layout knobs.
  * Only applies from md up; below that the grid is 2-col (sm) / 1-col (base).
+ * `w` is the slot's display width at the max container (1600px), used to size
+ * the responsive variants.
  */
 const patterns = [
-  { col: 'md:col-start-2 md:col-span-6', offsetY: '' },
-  { col: 'md:col-start-8 md:col-span-4', offsetY: 'md:mt-64' },
-  { col: 'md:col-start-1 md:col-span-5', offsetY: 'md:mt-32' },
-  { col: 'md:col-start-7 md:col-span-5', offsetY: 'md:mt-40' },
-  { col: 'md:col-start-3 md:col-span-6', offsetY: 'md:mt-56' },
-  { col: 'md:col-start-2 md:col-span-4', offsetY: 'md:mt-24' },
+  { col: 'md:col-start-2 md:col-span-6', offsetY: '', w: 740 },
+  { col: 'md:col-start-8 md:col-span-4', offsetY: 'md:mt-64', w: 485 },
+  { col: 'md:col-start-1 md:col-span-5', offsetY: 'md:mt-32', w: 613 },
+  { col: 'md:col-start-7 md:col-span-5', offsetY: 'md:mt-40', w: 613 },
+  { col: 'md:col-start-3 md:col-span-6', offsetY: 'md:mt-56', w: 740 },
+  { col: 'md:col-start-2 md:col-span-4', offsetY: 'md:mt-24', w: 485 },
 ] as const;
 
 const pattern = patterns[index % patterns.length];
+const cover = resolveUpload(p.cover);
 ---
 
 <FadeIn delay={(index % 3) * 120} class={`mb-24 md:mb-32 ${pattern.col} ${pattern.offsetY}`}>
   <a href={withBase(`/projects/${project.id}/`)} class="group block">
     <div class="relative overflow-hidden bg-muted">
-      <img
-        src={withBase(p.cover)}
+      <Picture
+        src={cover}
         alt={p.title}
-        loading={index < 3 ? 'eager' : 'lazy'}
+        layout="constrained"
+        width={pattern.w}
+        formats={['avif', 'webp']}
+        fallbackFormat="webp"
         class="block h-auto w-full transition-all duration-[1200ms] ease-out group-hover:scale-[1.02] group-hover:opacity-90"
       />
     </div>

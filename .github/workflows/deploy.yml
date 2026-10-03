@@ -30,6 +30,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Astro caches processed image variants here, keyed by source content —
+      # restoring it means a build only re-encodes new or changed photos.
+      - name: Cache processed images
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.astro
+          key: astro-images-${{ hashFiles('src/uploads/**') }}
+          restore-keys: |
+            astro-images-
+
       - name: Build
         run: npm run build
         env:

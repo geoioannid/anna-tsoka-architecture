@@ -1,14 +1,16 @@
 ---
 import { getCollection } from 'astro:content';
+import { Picture } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import FadeIn from '../components/FadeIn.astro';
 import Footer from '../components/Footer.astro';
+import { resolveUpload } from '../lib/images';
 import { paragraphs } from '../lib/blocks';
-import { withBase } from '../lib/url';
 
 const about = (await getCollection('about'))[0]?.data;
 const settings = (await getCollection('settings'))[0]?.data;
+const portrait = about?.portrait ? resolveUpload(about.portrait) : undefined;
 ---
 
 <BaseLayout
@@ -21,12 +23,17 @@ const settings = (await getCollection('settings'))[0]?.data;
     <div class="mx-auto max-w-[1600px] px-6 md:px-12">
       <div class="grid gap-16 md:grid-cols-12 md:gap-x-12">
         <FadeIn class="md:col-span-5 md:col-start-1">
-          <img
-            src={withBase(about?.portrait ?? '')}
-            alt="Studio portrait"
-            loading="lazy"
-            class="block h-auto w-full bg-muted"
-          />
+          {portrait && (
+            <Picture
+              src={portrait}
+              alt="Studio portrait"
+              layout="constrained"
+              width={613}
+              formats={['avif', 'webp']}
+              fallbackFormat="webp"
+              class="block h-auto w-full bg-muted"
+            />
+          )}
         </FadeIn>
 
         <FadeIn delay={120} class="md:col-span-6 md:col-start-7">

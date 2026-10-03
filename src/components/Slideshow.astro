@@ -1,5 +1,6 @@
 ---
-import { withBase } from '../lib/url';
+import { Picture } from 'astro:assets';
+import { resolveUpload } from '../lib/images';
 
 interface Slide {
   image: string;
@@ -11,6 +12,7 @@ interface Props {
 }
 
 const { slides } = Astro.props;
+const resolved = slides.map((s) => ({ ...s, img: resolveUpload(s.image) }));
 const captions = JSON.stringify(slides.map((s) => s.caption ?? ''));
 ---
 
@@ -22,18 +24,22 @@ const captions = JSON.stringify(slides.map((s) => s.caption ?? ''));
   aria-roledescription="carousel"
 >
   {
-    slides.map((s, i) => (
-        <img
-          src={withBase(s.image)}
-        alt={s.caption ?? ''}
-        fetchpriority={i === 0 ? 'high' : 'low'}
-        loading={i === 0 ? 'eager' : 'lazy'}
-        decoding={i === 0 ? 'sync' : 'async'}
-        class={`slideshow-img absolute inset-0 h-full w-full object-cover transition-opacity duration-[2000ms] ease-in-out ${
-          i === 0 ? 'opacity-100' : 'opacity-0'
-        }`}
-      />
-    ))
+    resolved.map((s, i) => (
+        <Picture
+          src={s.img}
+          alt={s.caption ?? ''}
+          layout="full-width"
+          formats={['avif', 'webp']}
+          fallbackFormat="webp"
+          // First slide is the page's LCP element; the rest are preloaded lazily.
+          fetchpriority={i === 0 ? 'high' : 'low'}
+          loading={i === 0 ? 'eager' : 'lazy'}
+          decoding={i === 0 ? 'sync' : 'async'}
+          class={`slideshow-img absolute inset-0 h-full w-full object-cover transition-opacity duration-[2000ms] ease-in-out ${
+            i === 0 ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+      ))
   }
 
   <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/25"></div>

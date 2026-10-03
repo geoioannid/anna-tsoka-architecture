@@ -4,7 +4,7 @@ location: Milan, Italy
 year: 2024
 phase: Built
 order: 10
-cover: /uploads/project-1.jpg
+cover: /uploads/project-1.webp
 description: >-
   A quiet apartment renovation in a former industrial building. A single
   continuous red floor unifies the kitchen and dining, while sheer curtains
@@ -19,10 +19,10 @@ blocks:
       Everything above it is left pale and provisional — curtains, plaster, existing steel — so that the floor reads as the one deliberate gesture.
   - type: images
     images:
-      - image: /uploads/project-1.jpg
+      - image: /uploads/project-1.webp
         caption: The red floor, seen from the entrance
-      - image: /uploads/project-2-portrait.jpg
+      - image: /uploads/project-2-portrait.webp
         caption: The floor continues into the kitchen
-      - image: /uploads/hero-1.jpg
+      - image: /uploads/hero-1.webp
         caption: Kitchen and dining
 ---

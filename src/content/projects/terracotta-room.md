@@ -4,7 +4,7 @@ location: Porto, Portugal
 year: 2023
 phase: Under construction
 order: 30
-cover: /uploads/project-3.jpg
+cover: /uploads/project-3.webp
 description: >-
   A restored bedroom in a nineteenth-century building. The original
   terracotta floor was preserved and paired with a single mid-century
@@ -18,8 +18,8 @@ blocks:
       A single mid-century armchair is the only addition; everything else was subtraction.
   - type: images
     images:
-      - image: /uploads/project-3.jpg
+      - image: /uploads/project-3.webp
         caption: The preserved terracotta floor
-      - image: /uploads/hero-3.jpg
+      - image: /uploads/hero-3.webp
         caption: North light
 ---

@@ -22,7 +22,7 @@ const optionalString = z.preprocess(
  * Projects — one markdown file per project in src/content/projects/.
  * The CMS (Sveltia) writes these; `year` is coerce-string because the CMS
  * saves bare YAML numbers, and image fields store public URL paths
- * (`/uploads/...`, files physically in public/uploads).
+ * (`/uploads/...`) that resolveUpload() maps to files in src/uploads.
  */
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),

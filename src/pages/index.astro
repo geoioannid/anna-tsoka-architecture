@@ -16,6 +16,7 @@ const projects = (await getCollection('projects')).sort(
 <BaseLayout
   title="Anna Tsoka Architecture"
   description="Anna Tsoka Architecture — a small practice for residential interiors, restorations and quiet public spaces."
+  image={home?.carousel[0]?.image}
 >
   <Nav overHero />
   <main>

@@ -13,7 +13,10 @@ backend:
 
 site_url: https://annatsoka.com
 
-media_folder: public/uploads
+# Uploads are stored in src/uploads (not public/) so Astro's build generates
+# responsive variants from them; content references them by their public
+# /uploads/... path, which resolveUpload() maps back at build time.
+media_folder: src/uploads
 public_folder: /uploads
 
 # Every uploaded photo is compressed in the browser before it is committed:
@@ -32,6 +35,12 @@ collections:
   - name: projects
     label: Projects
     label_singular: Project
+    description: >-
+      One entry per project. Just drop in camera-original photos — every upload
+      is automatically converted to WebP, capped at 2560px and stripped of
+      location data before it is saved. In image sets, photos pair up
+      two side-by-side when at least one of a pair is portrait; all-landscape
+      photos go full width.
     folder: src/content/projects
     create: true
     slug: '{{slug}}'
@@ -56,7 +65,7 @@ collections:
         widget: number
         default: 100
         hint: Position on the home page grid — lower numbers come first (10, 20, 30…).
-      - { label: Main image, name: cover, widget: image, hint: Any aspect ratio; shown large at the top of the project page. }
+      - { label: Main image, name: cover, widget: image, hint: The big photo at the top of the project page. Landscape or portrait both work — landscape fills the width, portrait stands taller. }
       - label: Description
         name: description
         widget: text
@@ -86,13 +95,17 @@ collections:
               - label: Images
                 name: images
                 widget: list
-                hint: Images are placed two side-by-side when at least one of a pair is portrait, otherwise full width.
+                hint: >-
+                  Photos pair up in the order you add them: two sit side-by-side
+                  when at least one of the pair is portrait, otherwise each goes
+                  full width. Leave an odd one out and it shows full width alone.
                 fields:
                   - { label: Image, name: image, widget: image }
                   - { label: Caption, name: caption, widget: string, required: false, hint: Shown under the image; also used as its alt text. }
 
   - name: site
     label: Home, About & Footer
+    description: The home carousel, the About page and the footer contact details.
     files:
       - name: home
         label: Home page & carousel
@@ -106,7 +119,10 @@ collections:
           - label: Carousel images
             name: carousel
             widget: list
-            hint: Full-width slides, cropped to 16:9 — order = display order.
+            hint: >-
+              Slides fill the screen and are center-cropped to a wide 16:9
+              shape, so keep the subject near the middle — landscape photos work
+              best. Order = display order.
             fields:
               - { label: Image, name: image, widget: image }
               - { label: Caption, name: caption, widget: string, required: false, hint: Optional small overlay; also used as alt text. }
@@ -114,7 +130,7 @@ collections:
         label: About page
         file: src/content/about.yml
         fields:
-          - { label: Portrait, name: portrait, widget: image }
+          - { label: Portrait, name: portrait, widget: image, hint: Shown at portrait width beside your bio; also the social-share image for this page. }
           - { label: Intro heading, name: heading, widget: string, required: false }
           - label: Bio
             name: bio
