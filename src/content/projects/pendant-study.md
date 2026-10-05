@@ -5,7 +5,7 @@ year: '2025'
 phase: Under construction
 phaseCustom: ''
 order: 40
-cover: /uploads/108a.webp
+cover: /uploads/108b.webp
 description: A small study designed around two spherical pendants. Long oak shelves float across a plaster wall, holding only what is necessary.
 blocks:
   - type: text
@@ -17,8 +17,6 @@ blocks:
       Long oak shelves float across the plaster wall, holding only what is necessary.
   - type: images
     images:
-      - image: /uploads/108b.webp
-        caption: ''
       - image: /uploads/108c.webp
         caption: ''
       - image: /uploads/108a.webp
